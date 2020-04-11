@@ -44,7 +44,14 @@ public class Config {
         for (Field f : fields) {
             f.setAccessible(true);
             try {
-                f.set(this, configuration.get(f.getName().replaceAll("_", "."), f.get(this)));
+                //f.set(this, configuration.get(f.getName().replaceAll("_", "."), f.get(this)));
+                if(f.getType() == String.class) {
+                    f.set(this, configuration.get(f.getName().replaceAll("_", "."), f.get(this)).toString());
+                } else if(f.getType() == Integer.class) {
+                    f.set(this, configuration.getInt(f.getName().replaceAll("_", "."), (Integer) f.get(this)));
+                } else if(f.getType() == Boolean.class) {
+                    f.set(this, configuration.getBoolean(f.getName().replaceAll("_", "."), (Boolean) f.get(this)));
+                }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }

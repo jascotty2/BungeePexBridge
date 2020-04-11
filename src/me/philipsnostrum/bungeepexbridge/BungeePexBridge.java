@@ -29,7 +29,7 @@ public class BungeePexBridge extends Plugin {
     private static BungeePexBridge instance;
     private PermissionSystem permissionSystem;
     private Config config;
-    private MySQL mysql;
+    private MySQL mysql = null;
 
     public static BungeePexBridge get() {
         return instance;
@@ -76,6 +76,12 @@ public class BungeePexBridge extends Plugin {
                 getLogger().log(Level.SEVERE, "Disabling plugin! Permissions System requires a MySQL connection and one could not be established!");
                 return;
             }
+
+            //update every x minutes
+            new BungeeScheduler().schedule(instance, () -> {
+                if (mysql.enabled)
+                    initialize(null);
+            }, config.updateInterval, config.updateInterval, TimeUnit.MINUTES);
         }
 
         //commands
@@ -88,11 +94,6 @@ public class BungeePexBridge extends Plugin {
 
         initialize(null);
 
-        //update every x minutes
-        new BungeeScheduler().schedule(instance, () -> {
-            if (mysql.enabled)
-                initialize(null);
-        }, config.updateInterval, config.updateInterval, TimeUnit.MINUTES);
     }
 
     private PermissionSystem loadPermissionsSystem() {
@@ -106,7 +107,7 @@ public class BungeePexBridge extends Plugin {
     }
 
     public void onDisable() {
-        if (mysql.enabled)
+        if (mysql != null && mysql.enabled)
             mysql.close();
     }
 
