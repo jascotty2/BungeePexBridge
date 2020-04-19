@@ -52,6 +52,7 @@ public class BungeePexBridge extends Plugin {
             instance.getLogger().log(Level.INFO, msg);
     }
 
+    @Override
     public void onEnable() {
         instance = this;
 
@@ -106,6 +107,7 @@ public class BungeePexBridge extends Plugin {
         else return null;
     }
 
+    @Override
     public void onDisable() {
         if (mysql != null && mysql.enabled)
             mysql.close();
@@ -115,7 +117,6 @@ public class BungeePexBridge extends Plugin {
         try {
             getProxy().getScheduler().runAsync(this, () -> {
                 TreeMap<String, PermGroup> groups = new TreeMap<>();
-                TreeMap<UUID, PermPlayer> players = new TreeMap<>();
                 try {
                     for (String group : getPerms().getGroups())
                         groups.put(group, new PermGroup(group));
@@ -132,10 +133,7 @@ public class BungeePexBridge extends Plugin {
 
                     // players
                     for (ProxiedPlayer player : getProxy().getPlayers())
-                        players.put(player.getUniqueId(), loadPlayer(player.getUniqueId()));
-
-                    PermPlayer.setPermPlayers(new ConcurrentHashMap<>(players));
-
+                        if (player != null) PermPlayer.getPermPlayers().put(player.getUniqueId(), loadPlayer(player.getUniqueId()));
 
                     if (sender != null)
                         sender.sendMessage(new ComponentBuilder("Bungee permissions synced with " + config.permissionsSystem).color(ChatColor.GREEN).create());

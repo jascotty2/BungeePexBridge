@@ -16,7 +16,7 @@ public class MySQL {
     public boolean enabled;
 
     private static final int MAX_CONNECTIONS = 8;
-    private static CachedConnection[] connectionPool = new CachedConnection[MAX_CONNECTIONS];
+    private static final CachedConnection[] connectionPool = new CachedConnection[MAX_CONNECTIONS];
 	public MySQL(String host, String user, String pass, String database, String port){
 		info = new Properties();
 		info.put("autoReconnect", "true");
